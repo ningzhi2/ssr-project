@@ -1,18 +1,23 @@
 import React from "react";
 import ReactDom from 'react-dom'
-import { BrowserRouter } from "react-router-dom";
-// 引入路由条目
-import Routes from '../Routes'
-// 引入包装器
+import { BrowserRouter, Route } from "react-router-dom";
+// 路由条目
+import routes from '../Routes'
+// 包装器
 import { Provider } from "react-redux";
-// 引入创建store的函数
-import getStore from "../store";
+// 创建客户端store的方法
+import { getClientStore } from "../store";
 
 const App = () => {
+    // 创建有数据的store
+    const store = getClientStore()
     return (
-        <Provider store={getStore()}>
+        // 默认使用和服务端一样的store
+        <Provider store={store}>
             <BrowserRouter>
-                { Routes }
+                <div>
+                    {routes.map(route => <Route {...route} />)}
+                </div>
             </BrowserRouter>
         </Provider>
     )

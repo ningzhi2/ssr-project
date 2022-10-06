@@ -1,20 +1,21 @@
 import React from 'react'
 import { renderToString } from 'react-dom/server'
-import { StaticRouter } from 'react-router-dom'
-import Routes from '../Routes'
-// 引入包装器
+import { StaticRouter, Route } from 'react-router-dom'
+// 包装器 
 import { Provider } from 'react-redux'
-// 引入创建store的函数
-import getStore from '../store'
 
-export const render = (req) => {
+export const render = (store, routes, req) => {
   // 实现首屏渲染加快、seo   但是js交互会丢失 ===>  ReactDom.hydrate() 实现同构
   // 把组件的内容转换成html的字符串
-  // 使用包装器接入store 
+  // 使用包装器接入store
   const content = renderToString((
-    <Provider store={getStore()}>             
+    <Provider store={store}>
       <StaticRouter location={req.path} context={{}}>
-        { Routes }
+        <div>
+          {routes.map(route =>
+            <Route {...route} />
+          )}
+        </div>
       </StaticRouter>
     </Provider>
   ))
@@ -26,8 +27,15 @@ export const render = (req) => {
       </head>
       <body>
         <div id="root">${content}</div>
+        <script>
+          // 数据的注水
+          window.context = {
+            state: ${JSON.stringify(store.getState())}
+          }
+        </script>
         <!-- webpack打包时 ReactDom.hydrate 方法会 对比虚拟dom,  插入dom结点, 实现js交互 -->
-        <script src="/index.js"></script>  <!-- 引入一个script标签   /index.js 会匹配到 /public 实现同构 -->
+        <!-- 引入一个script标签   /index.js 会匹配到 /public 实现同构 -->
+        <script src="/index.js"></script>  
       </body>
     </html>
     `
