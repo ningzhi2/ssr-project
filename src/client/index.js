@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDom from 'react-dom'
 import { BrowserRouter, Route } from "react-router-dom";
+import { renderRoutes } from "react-router-config";
 // 路由条目
 import routes from '../Routes'
 // 包装器
@@ -16,7 +17,8 @@ const App = () => {
         <Provider store={store}>
             <BrowserRouter>
                 <div>
-                    {routes.map(route => <Route {...route} />)}
+                    {/*  { routes.map(route => <Route {...route} />) }  */}
+                    { renderRoutes(routes) }
                 </div>
             </BrowserRouter>
         </Provider>

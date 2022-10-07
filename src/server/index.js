@@ -1,4 +1,6 @@
 import express from 'express'
+// 利用express-http-proxy插件将服务器作为一个代理服务器
+import proxy from 'express-http-proxy'
 // matchRoutes ，实现 多级路由匹配
 import { matchRoutes } from 'react-router-config'
 
@@ -12,6 +14,24 @@ const app = express()
 // 所有静态文件的请求都去public目录下拿
 app.use(express.static('public')) 
 
+/**
+ *  
+ *  proxy   (客户端发起的接口请求，通过node中间层代理到 java server)
+ */
+// 用户请求http://localhost:3000/api/news.json?secret=abcd
+// req.url = /news.json?secret=abcd （注意，不包含api)
+// proxyReqPathResolver方法返回的是/ssr/api/news.json?secret=abcd
+// proxy（http://localhost:4000） + proxyReqPathResolver（/ssr/api/news.json?secret=abcd） = 完整的地址
+// 最终代理到http://localhost:4000/ssr/api/news.json?secret=abcd
+// （进来localhost:3000这个服务的请求 只匹配 路径以/api开头）
+app.use('/api', proxy('http://localhost:4000', { 
+  proxyReqPathResolver: req => '/ssr/api' + req.url
+}))
+
+/** 
+ * 
+ *  SSR   (node服务端发起的请求，直接向java server 请求)
+ */
 app.get('*', function(req, res){
   // 生成新的store
   const store = getStore()
@@ -24,7 +44,7 @@ app.get('*', function(req, res){
   // 根据请求地址匹配路由
   const matchedRoutes = matchRoutes(routes, req.path)
   const promises = []
-
+ 
   // 可能请求地址对应多个组件，多个组件就可能有多个loadData异步请求
   matchedRoutes.forEach(item => {
     if(item.route.loadData) {
@@ -39,11 +59,16 @@ app.get('*', function(req, res){
 
 })
 
+/**
+ * 
+ * 端口监听
+ */
 var server = app.listen(3000, function() {
   var host = server.address().address
   var port = server.address().port
   console.log('Example app listening at http://%s:%s', host, port)
 })
+
 
 
 // ssr只发生在第一次进入页面的时候，这个第一次的含义：
