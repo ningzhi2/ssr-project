@@ -2,17 +2,21 @@ import { createStore, applyMiddleware, combineReducers, compose } from 'redux'
 import thunk from 'redux-thunk'
 
 import { reducer as homeReducer } from '../containers/Home/store'
+import { reducer as headerReducer } from '../components/Header/store'
+import { reducer as translationReducer } from '../containers/Translation/store'
 import clientAxios from '../client/request'
 import serverAxios from '../server/request'
 
 const reducer = combineReducers({
-  home: homeReducer
+  home: homeReducer,
+  header: headerReducer,
+  translation:translationReducer
 })
 
 // 返回创建store的函数 
-export const getStore = () => {
+export const getStore = (req) => {
   // 服务端渲染携带serverAxios， 这个参数可以在 actionCreators 的时候作为第3个参数拿到
-  return createStore( reducer, applyMiddleware( thunk.withExtraArgument(serverAxios) ) )
+  return createStore( reducer, applyMiddleware( thunk.withExtraArgument(serverAxios(req)) ) )
 }
 
 export const getClientStore = () => {

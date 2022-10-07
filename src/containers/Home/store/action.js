@@ -1,4 +1,4 @@
-import { CHANGE_LIST } from "./contants";
+import { CHANGE_LIST } from "./constants";
 
 const changeList = (list) => {
   return {
@@ -7,8 +7,7 @@ const changeList = (list) => {
   }
 }
 
-export const getHomeList = (server) => {
-  console.log(server ? 'ajax__getHomeList() at NodeServer' : 'ajax__getHomeList() at Client')
+export const getHomeList = () => {
   return (dispatch, getState, axiosIntance) => {
     // 因为请求数据是异步的，所以必须将 axios.get()方法这种promise返回回去
     // 请求localhost:3000/api/news.json?secret=abcd
@@ -17,11 +16,11 @@ export const getHomeList = (server) => {
 		// 如果是服务端请求，服务端创建store的时候携带的是axiosInstance = serverStore
     return axiosIntance.get('/api/news.json?secret=abcd')
       .then(res => {
-        const list = res.data
+        const list = res.data.success ? res.data.data : []
         dispatch(changeList(list))
       })
       .catch(err => {
-        console.log('接口请求错误信息：', err)
+        console.log('getHomeList接口请求错误信息：', err)
       })
   }
 }

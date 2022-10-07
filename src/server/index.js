@@ -33,8 +33,10 @@ app.use('/api', proxy('http://localhost:4000', {
  *  SSR   (node服务端发起的请求，直接向java server 请求)
  */
 app.get('*', function(req, res){
+  if(req.path === '/favicon.ico') return
+  // console.log('req.path_____________', req.path)
   // 生成新的store
-  const store = getStore()
+  const store = getStore(req)
   // 这里获取异步数据，并填充到store当中
   // store里面填充什么，我们不知道，需要结合当前用户请求地址，和路由做判断
   // 如果用户访问 / 路径，我们就拿home组件的异步数据
@@ -43,10 +45,12 @@ app.get('*', function(req, res){
 
   // 根据请求地址匹配路由
   const matchedRoutes = matchRoutes(routes, req.path)
+  // console.log('matchedRoutes______________', matchedRoutes)
   const promises = []
  
   // 可能请求地址对应多个组件，多个组件就可能有多个loadData异步请求
   matchedRoutes.forEach(item => {
+    // console.log('matchedRoutes_item____', item)
     if(item.route.loadData) {
       promises.push(item.route.loadData(store))
     }

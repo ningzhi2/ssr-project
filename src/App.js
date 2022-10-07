@@ -3,6 +3,7 @@ import React from "react";
 import { renderRoutes } from "react-router-config";
 
 import Header from "./components/Header";
+import { actions } from "./components/Header/store";
 
 // 渲染一级路由的内容
 const App = (props) => {
@@ -15,6 +16,11 @@ const App = (props) => {
       }
     </div>
   )
+}
+
+App.loadData = (store) => {
+  // 判断是否登录，更新store
+  return store.dispatch( actions.getHeaderInfo() )
 }
 
 export default App

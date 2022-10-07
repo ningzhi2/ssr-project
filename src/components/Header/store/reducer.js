@@ -1,13 +1,13 @@
-import { CHANGE_LIST } from "./constants";
+import { CHANGE_LOGIN } from './constants'
 
 const defaultState = {
-  newList: []
+  login: true
 }
 
 export default (state = defaultState, action) => {
   switch(action.type) {
-    case CHANGE_LIST:
-      const newState = { ...state, newList: action.list }
+    case CHANGE_LOGIN:
+      const newState = { ...state, login: action.value }
       return newState
     default:
       return state

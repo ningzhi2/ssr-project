@@ -18,6 +18,7 @@ const App = () => {
             <BrowserRouter>
                 <div>
                     {/*  { routes.map(route => <Route {...route} />) }  */}
+                    {/*  渲染多级路由  */}
                     { renderRoutes(routes) }
                 </div>
             </BrowserRouter>
